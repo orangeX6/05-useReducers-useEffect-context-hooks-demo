@@ -6,13 +6,15 @@
 -> useEffect
 -> useRef
 -> useReducer 
+-> useImperativeHandle
+
+
 
 # RULES OF HOOKS 
 >>  1.1 Only call react hooks in react functions
 >>  1.2 Custom hooks 
 >>  2.1 Only call React Hooks at the top level 
 >>  3. In useEffect() - ALWAYS ADD everything you refer to inside of useEffect as a dependency unless there is a good reason not to. (eg - only call useEffect on initial state render)
-
 
 #   useReducer
 -> const [state, dispatchFn] = useReducer(reducerFn, initialState, initFn)
@@ -26,6 +28,99 @@
 
 >> initialState - to set initial State
 >> initFn - a function to set the initial state programmatically
+
+
+
+#useRef, useImperativeHandle hooks and forwardRefs function
+# useRef 
+>> useRef creates a reference to the DOM element to access the values and methods of that element 
+>> ref hook is supported on all built in html components
+>> eg 
+const inputRef = useRef()
+
+useEffect(()=> {
+  inputRef.current.focus() //got access to js focus method on HTML input element
+},[])
+
+return (
+  <div>
+    <input ref={inputRef} />
+  </div>
+)
+
+# useImperativeHandle 
+->-------------------------------------------
+>> NOTE - Avoid using this approach at all cost
+->-------------------------------------------
+-> useImperativeHandle hook, has a strange name, is a hook that allows us to use Component or functionalities from inside this Component imperatively, which simply means not through the regular state props management, not by controlling the Component through state in the parent Component, but instead by directly calling or manipulating something in the Component programmatically.
+-> Takes 2 arguments - refs, f()
+IMPORTANT - in our Component function argument list, we have always just worked with props and in 99.9% of cases, that is all you will need. However, there technically also is a second argument you can accept and that's a ref.
+>> ref - takes the reference
+>> func - should return object. (Contain all the external data and bind it to internal func)
+
+ //Focus points to an internal function activate
+useImperativeHandle(ref, () => {
+    return {
+      focus: activate,
+    };
+  });
+
+  //activate func
+useImperativeHandle(ref, () => { 
+   const activate = () => {
+    inputRef.current.focus();
+  };
+  
+#forwardRefs
+>>In order to enable this second argument here, we need to export our Component function in a special way. We need to wrap it with something, and it's called forwardRef. 
+>> And that is basically a function which we execute, to which we pass our Component function. 
+>> So our Component function is now the first argument to forwardRef and forwardRef returns a React Component, so Input still is a React Component but a React Component that is capable of being bound to a ref. 
+
+EXAMPLE
+import React, { useRef, useImperativeHandle } from 'react';
+
+import classes from './Input.module.css';
+
+const Input = React.forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  const activate = () => {
+    inputRef.current.focus();
+  };
+
+  useImperativeHandle(ref, () => {
+    return {
+      focus: activate,
+    };
+  });
+
+  return (
+    <div
+      className={`${classes.control} ${
+        props.emailIsValid === false ? classes.invalid : ''
+      }`}
+    >
+      <label htmlFor={props.id}>{props.label}</label>
+      <input
+        type={props.type}
+        id={props.id}
+        ref={inputRef}
+        value={props.value}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+      />
+    </div>
+  );
+});
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
 
 # importing React, whats called behind the scenes - 
 # when we use jsx the following code is executed behind the scenes
