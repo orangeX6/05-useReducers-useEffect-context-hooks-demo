@@ -1,18 +1,9 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useContext } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
-
-// const loginReducer = (state, action) => {
-//   if (action.type === 'USER_INPUT') {
-//     return { value: action.val, isValid: action.val.includes('@') };
-//   }
-//   // if (action.type === 'INPUT_BLUR') {
-//   //   return { value: state.value, isValid: state.value.includes('@') };
-//   // }
-//   return { value: '', isValid: false };
-// };
+import AuthContext from '../../context/auth-context';
 
 const loginReducer = (state, action) => {
   switch (action.type) {
@@ -50,15 +41,10 @@ const initialState = {
   formIsValid: null,
 };
 
-const Login = (props) => {
-  // const [enteredEmail, setEnteredEmail] = useState('');
-  // const [emailIsValid, setEmailIsValid] = useState();
-  // const [enteredPassword, setEnteredPassword] = useState('');
-  // const [passwordIsValid, setPasswordIsValid] = useState();
-  // const [formIsValid, setFormIsValid] = useState(false);
-
-  // const [state, dispatch] = useReducer(loginReducer, initialState);
+const Login = () => {
   const [state, dispatch] = useReducer(loginReducer, initialState);
+
+  const authCtx = useContext(AuthContext);
 
   // console.log(state);
   // useEffect(() => {
@@ -72,7 +58,7 @@ const Login = (props) => {
     const timer = setTimeout(() => {
       // console.log('Validity run', state);
       dispatch({ type: 'FORM_SUBMIT' });
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [emailIsValid, passwordIsValid]);
@@ -81,13 +67,12 @@ const Login = (props) => {
   const emailChangeHandler = (event) => {
     dispatch({ type: 'EMAIL_INPUT', payload: event.target.value });
 
-    // setFormIsValid(state.emailIsValid && state.passwordIsValid);
     // dispatch({ type: 'FORM_SUBMIT' });
   };
 
   const passwordChangeHandler = (event) => {
     dispatch({ type: 'PASSWORD_INPUT', payload: event.target.value });
-    // setFormIsValid(state.isValid && event.target.value.trim().length > 6);
+
     // dispatch({ type: 'FORM_SUBMIT' });
   };
 
@@ -103,7 +88,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(state.enteredEmail, state.enteredPassword);
+    authCtx.onLogin(state.enteredEmail, state.enteredPassword);
   };
 
   return (

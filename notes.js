@@ -7,6 +7,13 @@
 -> useRef
 -> useReducer 
 
+# RULES OF HOOKS 
+>>  1.1 Only call react hooks in react functions
+>>  1.2 Custom hooks 
+>>  2.1 Only call React Hooks at the top level 
+>>  3. In useEffect() - ALWAYS ADD everything you refer to inside of useEffect as a dependency unless there is a good reason not to. (eg - only call useEffect on initial state render)
+
+
 #   useReducer
 -> const [state, dispatchFn] = useReducer(reducerFn, initialState, initFn)
 >> useReducer is a good replacement of useState when you have two states that belong together and/or if you have state updates that depends on other state
@@ -111,6 +118,38 @@ export default Wrapper;
 
 # REACT CONTEXT (CONTEXT API)
 -> React Context allows us to manage State behind the scenes in React, such that we are able to directly change it from any component in our App and directly pass it to any component in our app without building a prop chain.
+
+>>  defining context
+const authContext = React.createContext({isLoggedIn:false})
+
+export default AuthContext
+
+>> Providing context 
+? Providing means that you wrap in JSX code all the components that should be able to tap into that Context. Any component thats not wrapped will not be able to listen to the context component
+<ContextName.Provider>
+  <ComponentWhoWantsToAccessContext />
+</ContextName.Provider>
+
+>>Listening to Context
+? To get access to the context value we have to listen to it and we can do that in 2 ways - 
+->  AuthContext Consumer
+->  React Hook
+
+>> We can also add A custom context provider component in context api 
+
+const AuthContext = React.createContext({
+  isLoggedIn: false,
+  onLogout: () => {},
+  onLogin: (email, password) => {},
+});
+
+The data in object we create using React.createContext can be a dummy data which explains the structure of the context. 
+
+->> CONTEXT LIMITATIONS 
+>> Where to use Props vs Context
+-> Props for configuration, context for state management across the app
+>> React Context is NOT OPTIMIZED for high frequency changes
+>> React context also should not be used to replace ALL component communications and props
 
 
 */
